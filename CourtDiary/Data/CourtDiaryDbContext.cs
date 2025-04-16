@@ -11,6 +11,8 @@ public class CourtDiaryDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
+    public DbSet<Organization> Organizations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
