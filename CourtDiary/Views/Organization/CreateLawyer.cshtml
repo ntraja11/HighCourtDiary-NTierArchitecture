@@ -1,0 +1,57 @@
+﻿@model CreateLawyerViewModel
+
+@{
+    ViewData["Title"] = "Create Lawyer";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h3>Create Lawyer</h3>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Organization" asp-action="CreateLawyer" method="post">
+                <input type="hidden" asp-for="Lawyer.OrganizationId" value="@Model.Lawyer!.OrganizationId" />
+                <div class="row">
+                    <!-- Left Section: Lawyer Details -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="Lawyer.FullName"></label>
+                            <input asp-for="Lawyer.FullName" type="text" class="form-control" placeholder="Enter full name" required />
+                            <span asp-validation-for="Lawyer.FullName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="SelectedRole" class="form-label">Selected Role</label>
+                            <select class="form-select" id="SelectedRole" name="SelectedRole" required>
+                                <option value="" selected disabled>Select Role</option>
+                                @foreach (var org in Model.AvailableRoles)
+                                {
+                                    <option value="@org">@org</option>
+                                }
+                            </select>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Right Section: Organization & Role Selection -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="Lawyer.Email"></label>
+                            <input asp-for="Lawyer.Email" type="email" class="form-control" placeholder="Enter email" required />
+                            <span asp-validation-for="Lawyer.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" required />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success mt-3">Create Lawyer</button>
+            </form>
+        </div>
+    </div>
+</div>

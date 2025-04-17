@@ -1,6 +1,85 @@
 ﻿@model OrganizationAdminViewModel
 
-<h2>Organization Details</h2>
-<p>Name: @Model.Organization.Name</p>
-<p>City: @Model.Organization.City</p>
-<p class="@(Model.Organization.IsActive ? "" : "text-danger")">Status: @(Model.Organization.IsActive ? "Active" : "Pending Approval")</p>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h3>Organization Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p><strong>Name:</strong> @Model.Organization!.Name</p>
+                    <p><strong>City:</strong> @Model.Organization.City</p>
+                    <p class="@(Model.Organization.IsActive ? "" : "text-danger")">
+                        <strong>Status:</strong> @(Model.Organization.IsActive ? "Active" : "Pending Approval")
+                        @if (!Model.Organization.IsActive)
+                        {
+                            <p>Please contact your admin for approval.</p>
+                        }
+                
+                    </p>
+
+                    @if (Model.Organization.IsActive)
+                    {
+                        @if (!Model.OrganizationAdmin!.IsLawyer)
+                        {
+                            <!-- Assign Lawyer Role Checkbox -->
+                            <form asp-action="AssignAdminAsLawyer" method="post">
+                                <input type="hidden" name="orgAdminId" value="@Model.OrganizationAdmin!.Id" />
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="assignLawyerRole" name="assignLawyerRole" required>
+                                    <label class="form-check-label" for="assignLawyerRole">Assign Organization Admin as Lawyer</label>
+                                </div>
+                                <button type="submit" class="btn btn-success mt-3">Update Role</button>
+                            </form>
+                        }
+                    }
+
+            
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <h4>Manage Lawyers</h4>
+                    <a asp-controller="Organization" asp-action="CreateLawyer" asp-route-organizationId="@Model.Organization.Id" class="btn btn-primary">Add Lawyer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- Lawyers List -->
+    @if (Model.Lawyers != null && Model.Lawyers.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+                <h3>Lawyers in Organization</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var lawyer in Model.Lawyers)
+                        {
+                            <tr>
+                                <td>@lawyer.FullName</td>
+                                <td>@lawyer.Email</td>
+                                <td>
+                                    <a asp-action="EditLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-action="RemoveLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+

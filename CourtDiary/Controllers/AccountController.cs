@@ -35,6 +35,8 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            var firstOrganization = _db.Organizations.Count() == 0;
+
             var organization = new Organization
             {
                 Name = model.OrganizationName,
@@ -60,8 +62,15 @@ namespace CourtDiary.Controllers
 
             if (result.Succeeded)
             {
-                //await _userManager.AddToRoleAsync(user, StaticDetails.RoleSuperAdmin);
-                await _userManager.AddToRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
+                if (firstOrganization)
+                {
+                    await _userManager.AddToRoleAsync(user, StaticDetails.RoleSuperAdmin);
+                }
+                else
+                {
+                    await _userManager.AddToRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
+                }
+
                 return RedirectToAction("Login");
             }
 
