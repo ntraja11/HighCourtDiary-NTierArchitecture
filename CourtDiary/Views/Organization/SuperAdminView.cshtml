@@ -11,7 +11,7 @@
         <div class="alert alert-info">
             <strong>No organizations registered.</strong> Please check back later.
         </div>
-        
+
     }
 
     @if (Model.PendingOrganizations.Any())
@@ -68,7 +68,8 @@
                         <tr>
                             <th>Name</th>
                             <th>City</th>
-                            <th>Created Date</th>
+                            <th>Created By</th>
+                            <th class="hide-on-mobile">Created Date</th>
                             <th class="hide-on-mobile">Activated Date</th>
                         </tr>
                     </thead>
@@ -78,7 +79,8 @@
                             <tr>
                                 <td>@org.Name</td>
                                 <td>@org.City</td>
-                                <td>@org.CreatedDate!.Value</td>
+                                <td>@org.CreatedBy</td>
+                                <td class="hide-on-mobile">@org.CreatedDate!.Value</td>
                                 <td class="hide-on-mobile">@org.ActivatedDate!.Value</td>
                             </tr>
                         }

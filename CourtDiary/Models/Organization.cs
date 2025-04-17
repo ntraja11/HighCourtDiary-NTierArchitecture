@@ -15,7 +15,6 @@ namespace CourtDiary.Models
 
         public DateOnly? ActivatedDate { get; set; }
 
-        public ApplicationUser? Owner { get; set; }
-
+        public string? CreatedBy { get; set; }
     }
 }

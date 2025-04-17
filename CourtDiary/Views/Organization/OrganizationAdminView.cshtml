@@ -1,0 +1,6 @@
+﻿@model OrganizationAdminViewModel
+
+<h2>Organization Details</h2>
+<p>Name: @Model.Organization.Name</p>
+<p>City: @Model.Organization.City</p>
+<p class="@(Model.Organization.IsActive ? "" : "text-danger")">Status: @(Model.Organization.IsActive ? "Active" : "Pending Approval")</p>

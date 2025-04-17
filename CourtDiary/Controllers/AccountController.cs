@@ -39,7 +39,9 @@ namespace CourtDiary.Controllers
             {
                 Name = model.OrganizationName,
                 City = model.City,
-                IsActive = false
+                IsActive = false,
+                CreatedDate = DateOnly.FromDateTime(DateTime.Now),
+                CreatedBy = model.Email
             };
             _db.Organizations.Add(organization);
             await _db.SaveChangesAsync();
@@ -50,13 +52,16 @@ namespace CourtDiary.Controllers
                 Email = model.Email,
                 UserName = model.Email,
                 FullName = model.FullName,
-                OrganizationId = organization.Id
+                EmailConfirmed = true,
+                OrganizationId = organization.Id                
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, StaticDetails.RoleSuperAdmin);
+                //await _userManager.AddToRoleAsync(user, StaticDetails.RoleSuperAdmin);
+                await _userManager.AddToRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
                 return RedirectToAction("Login");
             }
 
@@ -89,15 +94,17 @@ namespace CourtDiary.Controllers
             if (result.Succeeded)
             {
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.FullName!)
-                };
+                    {
+                        new Claim(ClaimTypes.Name, user.FullName!),
+                        new Claim(ClaimTypes.Email, user.Email!),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id)
+                    };
 
                 var claimsIdentity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
 
                 await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Organization");
             }
 
             ModelState.AddModelError("", "Invalid email or password.");
