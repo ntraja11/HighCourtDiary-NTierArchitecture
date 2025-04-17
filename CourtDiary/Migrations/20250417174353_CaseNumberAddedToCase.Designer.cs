@@ -4,6 +4,7 @@ using CourtDiary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourtDiary.Migrations
 {
     [DbContext(typeof(CourtDiaryDbContext))]
-    partial class CourtDiaryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417174353_CaseNumberAddedToCase")]
+    partial class CaseNumberAddedToCase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,30 +116,29 @@ namespace CourtDiary.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CourtName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("CreatedDate")
                         .HasColumnType("date");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("LastHearing")
+                    b.Property<DateOnly>("LastHearing")
                         .HasColumnType("date");
 
                     b.Property<string>("LawyerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("NextHearing")
+                    b.Property<DateOnly>("NextHearing")
                         .HasColumnType("date");
 
                     b.HasKey("Id");

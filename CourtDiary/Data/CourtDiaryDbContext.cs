@@ -12,6 +12,9 @@ public class CourtDiaryDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Organization> Organizations { get; set; }
+    public DbSet<Case> Cases { get; set; }
+
+    public DbSet<Hearing> Hearings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

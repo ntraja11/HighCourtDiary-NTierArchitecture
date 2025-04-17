@@ -1,0 +1,51 @@
+﻿@model CaseListViewModel
+
+@{
+    ViewData["Title"] = "Cases";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h3>Cases for @Model.LawyerName</h3>
+            <div>
+                <a asp-controller="Organization" asp-action="Index" class="btn btn-info">Back</a>
+                <a asp-controller="Case" asp-action="CreateCase" asp-route-lawyerId="@Model.LawyerId" class="btn btn-light">Add Case</a>
+            </div>
+            
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Cases.Any())
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Title</th>
+                            <th>Client Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var caseItem in Model.Cases)
+                        {
+                            <tr>
+                                <td>@caseItem.CaseNumber</td>
+                                <td>@caseItem.Name</td>
+                                <td>@caseItem.ClientName</td>
+                                <td>
+                                    <a asp-controller="Case" asp-action="EditCase" asp-route-id="@caseItem.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-controller="Case" asp-action="DeleteCase" asp-route-caseId="@caseItem.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No cases found.</p>
+            }
+        </div>
+    </div>
+</div>

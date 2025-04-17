@@ -1,0 +1,51 @@
+﻿@model Case
+
+@{
+    ViewData["Title"] = "Create Case";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Create Case</h3>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Case" asp-action="CreateCase" method="post">
+                <input type="hidden" asp-for="LawyerId" value="@Model.LawyerId" />
+                <div class="row">
+                    <!-- Left Section: Basic Case Details -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="CaseNumber" >Case Number</label>
+                            <input asp-for="CaseNumber"  type="text" class="form-control" id="CaseNumber" name="CaseNumber" placeholder="Enter case number" required>
+                            <span asp-validation-for="CaseNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Name" >Case Name</label>
+                            <input asp-for="Name" type="text" class="form-control" id="Name" name="Name" placeholder="Enter case name"  required>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>                                               
+                    </div>
+
+                    <!-- Right Section: Court & Hearing Details -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="ClientName">Client Name</label>
+                            <input asp-for="ClientName" type="text" class="form-control" id="ClientName" name="ClientName" placeholder="Enter client name" required>
+                            <span asp-validation-for="ClientName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" >Description</label>
+                            <textarea asp-for="Name" class="form-control" id="Description" name="Description" rows="3" placeholder="Enter case description" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                    </div>
+                </div>               
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success mt-3">Create Case</button>
+            </form>
+        </div>
+    </div>
+</div>

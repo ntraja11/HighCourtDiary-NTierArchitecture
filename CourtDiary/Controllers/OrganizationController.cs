@@ -66,7 +66,7 @@ namespace CourtDiary.Controllers
             }
             else if (isLawyer || isJunior)
             {
-                return View("LawyerView");
+                return RedirectToAction("Cases", "Case");
             }
 
                 return RedirectToAction("Index", "Home");

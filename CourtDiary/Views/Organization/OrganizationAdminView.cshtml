@@ -1,5 +1,9 @@
 ﻿@model OrganizationAdminViewModel
 
+@{
+    ViewData["Title"] = "Organization Admin";
+}
+
 <div class="container mt-4">
     <div class="card">
         <div class="card-header bg-secondary text-white">
@@ -67,7 +71,7 @@
                         @foreach (var lawyer in Model.Lawyers)
                         {
                             <tr>
-                                <td>@lawyer.FullName</td>
+                                <td><a asp-controller="Case" asp-action="Cases" asp-route-lawyerId="@lawyer.Id">@lawyer.FullName</a></td>
                                 <td>@lawyer.Email</td>
                                 <td>
                                     <a asp-action="EditLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-warning">Edit</a>
