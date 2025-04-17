@@ -11,5 +11,7 @@ namespace CourtDiary.Models
 
         public bool IsActive { get; set; } = false;
 
+        public ApplicationUser? Owner { get; set; }
+
     }
 }

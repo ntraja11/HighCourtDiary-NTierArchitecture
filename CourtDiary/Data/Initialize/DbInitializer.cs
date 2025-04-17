@@ -40,5 +40,5 @@ namespace CourtDiary.Data.Initialize
             }
         }
     }
-    
+
 }

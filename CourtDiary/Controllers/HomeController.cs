@@ -1,6 +1,6 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using CourtDiary.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace CourtDiary.Controllers;
 
