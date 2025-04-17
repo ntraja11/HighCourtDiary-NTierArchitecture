@@ -1,6 +1,8 @@
 ﻿using CourtDiary.Data;
 using CourtDiary.Models;
+using CourtDiary.Utility;
 using CourtDiary.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -37,7 +39,7 @@ namespace CourtDiary.Controllers
 
         public IActionResult CreateCase(string lawyerId)
         {
-            return View(new Case { LawyerId = lawyerId});
+            return View(new Case { LawyerId = lawyerId });
         }
 
         [HttpPost]
@@ -61,7 +63,7 @@ namespace CourtDiary.Controllers
             return View(caseModel);
         }
 
-        
+        //[Authorize(Roles = $"{StaticDetails.RoleSuperAdmin},{StaticDetails.RoleOrganizationAdmin}")]
         public async Task<IActionResult> DeleteCase(int caseId)
         {
             var caseFromDb = await _db.Cases.AsNoTracking().SingleOrDefaultAsync(c => c.Id == caseId);

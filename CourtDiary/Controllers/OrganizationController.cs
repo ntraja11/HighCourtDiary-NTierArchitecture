@@ -146,11 +146,11 @@ namespace CourtDiary.Controllers
                 EmailConfirmed = true,
                 OrganizationId = organization.Id
             };
-            var result = await _userManager.CreateAsync(user, viewModel.Password);
+            var result = await _userManager.CreateAsync(user, viewModel!.Password!);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, viewModel.SelectedRole);
+                await _userManager.AddToRoleAsync(user, viewModel!.SelectedRole!);
                 return RedirectToAction("Index");
             }
             foreach (var error in result.Errors)

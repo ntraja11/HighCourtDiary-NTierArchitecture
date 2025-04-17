@@ -1,4 +1,5 @@
-﻿@model OrganizationAdminViewModel
+﻿
+@model OrganizationAdminViewModel
 
 @{
     ViewData["Title"] = "Organization Admin";
@@ -6,8 +7,15 @@
 
 <div class="container mt-4">
     <div class="card">
-        <div class="card-header bg-secondary text-white">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
             <h3>Organization Details</h3>
+            @if (Model.Organization!.IsActive)
+            {
+                <div>
+                    <a asp-controller="Organization" asp-action="CreateLawyer" asp-route-organizationId="@Model.Organization!.Id" class="btn btn-light">Add Lawyer</a>
+                </div>
+            }
+            
         </div>
         <div class="card-body">
             <div class="row">
@@ -18,9 +26,9 @@
                         <strong>Status:</strong> @(Model.Organization.IsActive ? "Active" : "Pending Approval")
                         @if (!Model.Organization.IsActive)
                         {
-                            <p>Please contact your admin for approval.</p>
+                            <br/>
+                            <span>Please contact your admin for approval.</span>
                         }
-                
                     </p>
 
                     @if (Model.Organization.IsActive)
@@ -39,18 +47,13 @@
                         }
                     }
 
-            
-                </div>
 
-                <div class="col-12 col-md-6">
-                    <h4>Manage Lawyers</h4>
-                    <a asp-controller="Organization" asp-action="CreateLawyer" asp-route-organizationId="@Model.Organization.Id" class="btn btn-primary">Add Lawyer</a>
                 </div>
             </div>
         </div>
     </div>
 
-   
+
     <!-- Lawyers List -->
     @if (Model.Lawyers != null && Model.Lawyers.Any())
     {
@@ -75,7 +78,10 @@
                                 <td>@lawyer.Email</td>
                                 <td>
                                     <a asp-action="EditLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-warning">Edit</a>
-                                    <a asp-action="RemoveLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-danger">Remove</a>
+                                    @if (User.IsInRole(StaticDetails.RoleSuperAdmin))
+                                    {
+                                        <a asp-action="RemoveLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-danger">Remove</a>                                        
+                                    }
                                 </td>
                             </tr>
                         }
