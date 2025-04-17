@@ -1,0 +1,73 @@
+﻿@model OrganizationViewModel
+@{
+    ViewData["Title"] = "Organizations";
+}
+
+<div class="container mt-4">
+    <h2>Organizations Management</h2>
+
+    <!-- Pending Organizations -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h4>New Organizations - Pending Approval</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Created Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var org in Model.PendingOrganizations)
+                    {
+                        <tr>
+                            <td>@org.Name</td>
+                            <td>@org.City</td>
+                            @* <td>@org.CreatedAt.ToShortDateString()</td> *@
+                            <td>
+                                <form asp-action="ApproveOrganization" method="post">
+                                    <input type="hidden" name="organizationId" value="@org.Id" />
+                                    <button type="submit" class="btn btn-success">Approve</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Approved Organizations -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Active Organizations</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Created Date</th>
+                        <th>Activated Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var org in Model.ApprovedOrganizations)
+                    {
+                        <tr>
+                            <td>@org.Name</td>
+                            <td>@org.City</td>
+                            <td>@org.CreatedDate!.Value</td>
+                            <td>@org.ActivatedDate!.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

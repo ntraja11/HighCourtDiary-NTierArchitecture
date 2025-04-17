@@ -11,6 +11,10 @@ namespace CourtDiary.Models
 
         public bool IsActive { get; set; } = false;
 
+        public DateOnly? CreatedDate { get; set; }
+
+        public DateOnly? ActivatedDate { get; set; }
+
         public ApplicationUser? Owner { get; set; }
 
     }

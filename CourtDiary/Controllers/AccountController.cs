@@ -96,7 +96,6 @@ namespace CourtDiary.Controllers
                 var claimsIdentity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
 
                 await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(claimsIdentity));
-                //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
                 return RedirectToAction("Index", "Home");
             }
