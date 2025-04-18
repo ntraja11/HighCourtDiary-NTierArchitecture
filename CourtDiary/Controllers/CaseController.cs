@@ -58,10 +58,33 @@ namespace CourtDiary.Controllers
                 //caseModel.LawyerId = user.Id;
                 _db.Cases.Add(caseModel);
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Cases", new { lawyerId = caseModel.LawyerId });
+                return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
             }
             return View(caseModel);
         }
+
+        public async Task<IActionResult> EditCase(int caseId)
+        {
+            var caseFromDb = await _db.Cases.FindAsync(caseId);
+            if (caseFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(caseFromDb);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCase(Case caseModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Cases.Update(caseModel);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
+            }
+            return View(caseModel);
+        }
+
 
         //[Authorize(Roles = $"{StaticDetails.RoleSuperAdmin},{StaticDetails.RoleOrganizationAdmin}")]
         public async Task<IActionResult> DeleteCase(int caseId)

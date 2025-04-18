@@ -23,15 +23,15 @@ namespace CourtDiary.Data.Initialize
             {
                 if (_db.Database.GetPendingMigrations().Any())
                 {
-                    _db.Database.Migrate();
+                    _db.Database.Migrate();                    
+                }
 
-                    if (!await _roleManager.RoleExistsAsync(StaticDetails.RoleSuperAdmin))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleSuperAdmin));
-                        await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleOrganizationAdmin));
-                        await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleLawyer));
-                        await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleJunior));
-                    }
+                if (!await _roleManager.RoleExistsAsync(StaticDetails.RoleSuperAdmin))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleSuperAdmin));
+                    await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleOrganizationAdmin));
+                    await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleLawyer));
+                    await _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleJunior));
                 }
             }
             catch (Exception ex)

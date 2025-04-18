@@ -8,5 +8,7 @@ namespace CourtDiary.ViewModels
         public ApplicationUser? OrganizationAdmin { get; set; }
 
         public IEnumerable<ApplicationUser> Lawyers { get; set; } = new List<ApplicationUser>();
+
+        public IEnumerable<Case> Cases { get; set; } = new List<Case>();
     }
 }

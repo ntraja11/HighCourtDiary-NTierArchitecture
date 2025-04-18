@@ -9,6 +9,8 @@ namespace CourtDiary.Models
         public string? BarRegistrationNumber { get; set; }
 
         public bool IsLawyer { get; set; } = false;
+
+        public bool IsJunior { get; set; } = false;
         public int? OrganizationId { get; set; }
         public Organization? Organization { get; set; }
     }

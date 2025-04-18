@@ -12,7 +12,7 @@
             @if (Model.Organization!.IsActive)
             {
                 <div>
-                    <a asp-controller="Organization" asp-action="CreateLawyer" asp-route-organizationId="@Model.Organization!.Id" class="btn btn-light">Add Lawyer</a>
+                    <a asp-controller="Lawyer" asp-action="CreateLawyer" asp-route-organizationId="@Model.Organization!.Id" class="btn btn-light">Add Lawyer</a>
                 </div>
             }
             
@@ -58,7 +58,7 @@
     @if (Model.Lawyers != null && Model.Lawyers.Any())
     {
         <div class="card mt-4">
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-tertiary text-dark">
                 <h3>Lawyers in Organization</h3>
             </div>
             <div class="card-body">
@@ -66,7 +66,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Email</th>
+                            <th class="hide-on-mobile">Email</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -75,13 +75,15 @@
                         {
                             <tr>
                                 <td><a asp-controller="Case" asp-action="CaseList" asp-route-lawyerId="@lawyer.Id">@lawyer.FullName</a></td>
-                                <td>@lawyer.Email</td>
+                                <td class="hide-on-mobile">@lawyer.Email</td>
                                 <td>
-                                    <a asp-action="EditLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-warning">Edit</a>
-                                    @if (User.IsInRole(StaticDetails.RoleSuperAdmin))
-                                    {
-                                        <a asp-action="RemoveLawyer" asp-route-id="@lawyer.Id" class="btn btn-sm btn-danger">Remove</a>                                        
-                                    }
+                                    <div class="d-flex gap-1">
+                                        <a asp-controller="Lawyer" asp-action="EditLawyer" asp-route-lawyerId="@lawyer.Id" class="btn btn-sm btn-warning">Edit</a>
+                                        @if (!User.IsInRole(StaticDetails.RoleJunior))
+                                        {
+                                            <a asp-controller="Lawyer" asp-action="RemoveLawyer" asp-route-lawyerId="@lawyer.Id" class="btn btn-sm btn-danger">Remove</a>
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -90,6 +92,48 @@
             </div>
         </div>
     }
+
+
+
+
+    @if (Model.Cases != null && Model.Cases.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-body-tertiary text-dark">
+                <h3>Cases in Organization</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Title</th>
+                            <th class="hide-on-mobile">Client Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var caseItem in Model.Cases)
+                        {
+                            <tr>
+                                <td><a asp-controller="Case" asp-action="CaseDetails" asp-route-caseId="@caseItem.Id">@caseItem.CaseNumber</a></td>
+                                <td>@caseItem.Name</td>
+                                <td class="hide-on-mobile">@caseItem.ClientName</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a asp-controller="Case" asp-action="EditCase" asp-route-caseId="@caseItem.Id" class="btn btn-sm btn-warning">Edit</a>
+                                        <a asp-controller="Case" asp-action="DeleteCase" asp-route-caseId="@caseItem.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    }
+    
 
 </div>
 

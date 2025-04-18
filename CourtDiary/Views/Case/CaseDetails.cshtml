@@ -8,9 +8,9 @@
     <div class="card">
         <div class="card-header bg-secondary text-white d-flex flex-column flex-md-row align-items-center justify-content-between">
             <h3>Case Details</h3>
-            <div class="mt-2 mt-md-0">
+            <div class="d-flex gap-2">
                 <a asp-controller="Case" asp-action="CaseList" asp-route-lawyerId="@Model.Case!.LawyerId" class="btn btn-dark">Back</a>
-                <a asp-controller="Case" asp-action="EditCase" asp-route-lawyerId="@Model.Case.LawyerId" class="btn btn-warning">Edit Case</a>
+                <a asp-controller="Case" asp-action="EditCase" asp-route-caseId="@Model.Case.Id" class="btn btn-warning">Edit Case</a>
                 <a asp-controller="Hearing" asp-action="CreateHearing" asp-route-caseId="@Model.Case.Id" class="btn btn-light">Add Hearing</a>
             </div>
         </div>

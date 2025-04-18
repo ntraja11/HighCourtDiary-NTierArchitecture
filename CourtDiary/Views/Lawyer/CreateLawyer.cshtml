@@ -10,7 +10,8 @@
             <h3>Create Lawyer</h3>
         </div>
         <div class="card-body">
-            <form asp-controller="Organization" asp-action="CreateLawyer" method="post">
+            <form asp-controller="Lawyer" asp-action="CreateLawyer" method="post">
+                @* <div asp-validation-summary="All" class="text-danger"></div> *@
                 <input type="hidden" asp-for="Lawyer.OrganizationId" value="@Model.Lawyer!.OrganizationId" />
                 <div class="row">
                     <!-- Left Section: Lawyer Details -->
@@ -29,8 +30,9 @@
                                     <option value="@org">@org</option>
                                 }
                             </select>
+                            <span asp-validation-for="SelectedRole" class="text-danger"></span>
                         </div>
-                        
+
                     </div>
 
                     <!-- Right Section: Organization & Role Selection -->
@@ -45,13 +47,19 @@
                             <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" required />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
-                        
+
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-success mt-3">Create Lawyer</button>
+                <div class="d-flex gap-1">
+                    <button type="submit" class="btn btn-success mt-3">Create Lawyer</button>
+                    <a asp-controller="Organization" asp-action="Index" asp-route-organizationId="@Model.Lawyer!.OrganizationId" class="btn btn-dark mt-3">Cancel</a>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

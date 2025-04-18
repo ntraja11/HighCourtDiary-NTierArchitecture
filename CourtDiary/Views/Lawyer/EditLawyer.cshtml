@@ -1,0 +1,66 @@
+﻿@model EditLawyerViewModel
+
+@{
+    ViewData["Title"] = "Edit Lawyer";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h3>Edit Lawyer</h3>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Lawyer" asp-action="EditLawyer" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" asp-for="Lawyer.Id" value="@Model.Lawyer!.Id" />
+                <input type="hidden" asp-for="Lawyer.OrganizationId" value="@Model.Lawyer!.OrganizationId" />
+                <div class="row">
+                    <!-- Left Section: Lawyer Details -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="Lawyer.FullName"></label>
+                            <input asp-for="Lawyer.FullName" type="text" class="form-control" placeholder="Enter full name" required />
+                            <span asp-validation-for="Lawyer.FullName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="SelectedRole" class="form-label">Selected Role</label>
+                            <select asp-for="SelectedRole" class="form-select" id="SelectedRole" name="SelectedRole" required>
+                                <option value="" disabled>Select Role</option>
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role" selected="@(Model.SelectedRole == @role)">@role</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedRole" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Section: Organization & Role Selection -->
+                    <div class="col-md-6 col-12">
+                        <div class="mb-3">
+                            <label asp-for="Lawyer.Email"></label>
+                            <input asp-for="Lawyer.Email" type="email" class="form-control" placeholder="Enter email" required />
+                            <span asp-validation-for="Lawyer.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Lawyer.PhoneNumber"></label>
+                            <input asp-for="Lawyer.PhoneNumber" type="tel" class="form-control" placeholder="Enter phone number" required />
+                            <span asp-validation-for="Lawyer.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="d-flex gap-1">
+                    <button type="submit" class="btn btn-success mt-3">Update Lawyer</button>
+                    <a asp-controller="Organization" asp-action="Index" asp-route-organizationId="@Model.Lawyer!.OrganizationId" class="btn btn-dark mt-3">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

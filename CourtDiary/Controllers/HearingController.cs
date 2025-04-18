@@ -45,5 +45,40 @@ namespace CourtDiary.Controllers
             }
             return View(hearing);
         }
+
+        public IActionResult EditHearing(int hearingId)
+        {
+            var hearing = _db.Hearings.Find(hearingId);
+            if (hearing == null)
+            {
+                return NotFound();
+            }
+            return View(hearing);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditHearing(Hearing hearing)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Hearings.Update(hearing);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
+            }
+            return View(hearing);
+        }                
+
+        
+        public async Task<IActionResult> DeleteHearing(int hearingId)
+        {
+            var hearingToDelete = _db.Hearings.Find(hearingId);
+            if (hearingToDelete == null)
+            {
+                return NotFound();
+            }
+            _db.Hearings.Remove(hearingToDelete);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("CaseDetails", "Case", new { caseId = hearingToDelete.CaseId });
+        }
     }
 }

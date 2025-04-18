@@ -66,10 +66,10 @@ namespace CourtDiary.Controllers
             }
             else if (isLawyer || isJunior)
             {
-                return RedirectToAction("Cases", "Case");
+                return RedirectToAction("CaseList", "Case");
             }
 
-                return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");
             
         }       
 
@@ -108,58 +108,7 @@ namespace CourtDiary.Controllers
 
             return RedirectToAction("Index");
         }
-
-        public async Task<IActionResult> CreateLawyer(int organizationId)
-        {
-            var organization = await _db.Organizations.FindAsync(organizationId);
-            if (organization == null)
-            {
-                return NotFound();
-            }
-            var createLawyerViewModel = new CreateLawyerViewModel
-            {
-                Lawyer = new ApplicationUser
-                {                    
-                    OrganizationId = organization.Id                    
-                }
-            };
-            return View("CreateLawyer", createLawyerViewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateLawyer(CreateLawyerViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
-            var organization = await _db.Organizations.FindAsync(viewModel.Lawyer!.OrganizationId);
-            if (organization == null)
-            {
-                return NotFound();
-            }
-            var user = new ApplicationUser
-            {
-                Email = viewModel.Lawyer.Email,
-                UserName = viewModel.Lawyer.Email,
-                FullName = viewModel.Lawyer.FullName,
-                EmailConfirmed = true,
-                OrganizationId = organization.Id
-            };
-            var result = await _userManager.CreateAsync(user, viewModel!.Password!);
-
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, viewModel!.SelectedRole!);
-                return RedirectToAction("Index");
-            }
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-            return View(viewModel);
-        }
-
+                
         private async Task<IActionResult> ShowOrganizationAdminView(ApplicationUser user)
         {
             OrganizationAdminViewModel organizationAdminViewModel = await GetOrganizationAdminViewModel(user);
@@ -175,8 +124,19 @@ namespace CourtDiary.Controllers
             var juniors = await _userManager.GetUsersInRoleAsync(StaticDetails.RoleJunior);
             organizationLawyers.AddRange(juniors);
 
-            if(user.IsLawyer)
+            if (user.IsLawyer)
                 organizationLawyers.Add(user);
+
+
+            var cases = new List<Case>();
+
+            foreach(var lawyer in organizationLawyers)
+            {
+                var caseList = await _db.Cases.Where(c => c.LawyerId == lawyer.Id).ToListAsync();
+                cases.AddRange(caseList);
+            }
+
+            
 
             return new OrganizationAdminViewModel
             {
@@ -184,6 +144,7 @@ namespace CourtDiary.Controllers
                                     .FirstOrDefaultAsync(o => o.CreatedBy == user!.Email),
                 OrganizationAdmin = user,
                 Lawyers = organizationLawyers,
+                Cases = cases
             };
         }
     }
