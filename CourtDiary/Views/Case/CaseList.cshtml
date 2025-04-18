@@ -9,7 +9,10 @@
         <div class="card-header bg-secondary text-white d-flex flex-column flex-md-row align-items-center justify-content-between">
             <h3>Cases for @Model.LawyerName</h3>
             <div class="d-flex gap-2">
-                <a asp-controller="Organization" asp-action="Index" class="btn btn-dark">Back</a>
+                @if (User.IsInRole(StaticDetails.RoleOrganizationAdmin))
+                {
+                    <a asp-controller="Organization" asp-action="Index" class="btn btn-dark">Back</a>                    
+                }
                 <a asp-controller="Case" asp-action="CreateCase" asp-route-lawyerId="@Model.LawyerId" class="btn btn-light">Add Case</a>
             </div>
             

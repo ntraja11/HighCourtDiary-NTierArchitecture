@@ -7,8 +7,16 @@
 <div class="container d-flex justify-content-center align-items-center">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
         <h2 class="text-center">Register Organization</h2>
+
+        <!-- Login Option at the Top -->
+        <div class="text-center mt-2">
+            <p class="text-muted">Already have an account?</p>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Go to Login</a>
+        </div>
+
         <form asp-controller="Account" asp-action="Register" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
+
             <div class="form-group mt-3">
                 <label asp-for="FullName"></label>
                 <input asp-for="FullName" type="text" class="form-control" placeholder="Enter full name" required />
@@ -19,7 +27,7 @@
                 <label asp-for="Email"></label>
                 <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>            
+            </div>
 
             <div class="form-group mt-3">
                 <label asp-for="OrganizationName"></label>
@@ -52,7 +60,6 @@
         </form>
     </div>
 </div>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

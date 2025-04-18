@@ -7,6 +7,13 @@
 <div class="container d-flex justify-content-center align-items-center">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
         <h2 class="text-center">Login</h2>
+
+        <!-- Register Option at the Top -->
+        <div class="text-center mt-2">
+            <p class="text-muted">New here? Create an account!</p>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary">Register Organization</a>
+        </div>
+
         <form asp-controller="Account" asp-action="Login" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 

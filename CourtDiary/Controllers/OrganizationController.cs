@@ -66,7 +66,7 @@ namespace CourtDiary.Controllers
             }
             else if (isLawyer || isJunior)
             {
-                return RedirectToAction("CaseList", "Case");
+                return RedirectToAction("CaseList", "Case", new { lawyerId = user.Id });
             }
 
             return RedirectToAction("Index", "Home");

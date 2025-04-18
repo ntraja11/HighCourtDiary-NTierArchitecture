@@ -125,7 +125,7 @@ namespace CourtDiary.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Privacy", "Home");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

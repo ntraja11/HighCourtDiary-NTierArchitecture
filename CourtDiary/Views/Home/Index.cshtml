@@ -1,8 +1,69 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome to CourtDiary";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <!-- Hero Section -->
+    <section class="text-center p-3 bg-white">
+        <h1 class="fw-bold text-primary">Welcome to CourtDiary</h1>
+        <p class="lead text-muted">Simplifying legal case management for lawyers, firms, and case managers.</p>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">Get Started</a>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="mt-5">
+        <h2 class="text-center text-secondary mb-4">🚀 Why Choose CourtDiary?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-3 border rounded shadow-sm text-center">
+                    <i class="fas fa-folder-open fa-3x text-primary"></i>
+                    <h4 class="mt-3">Effortless Case Management</h4>
+                    <p>Track, update, and organize legal cases seamlessly in one place.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded shadow-sm text-center">
+                    <i class="fas fa-calendar-alt fa-3x text-success"></i>
+                    <h4 class="mt-3">Smart Hearing Scheduler</h4>
+                    <p>Never miss important court dates with automated scheduling.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded shadow-sm text-center">
+                    <i class="fas fa-user-shield fa-3x text-danger"></i>
+                    <h4 class="mt-3">Secure Role-Based Access</h4>
+                    <p>Admins, lawyers, and juniors get the right access levels effortlessly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use CourtDiary Section -->
+    <section class="mt-5 bg-light p-4 rounded">
+        <h2 class="text-center text-secondary mb-4">📌 How to Get Started</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">🏢 <strong>Step 1:</strong> Register your organization with a username and email.</li>
+                    <li class="list-group-item">🔑 <strong>Step 2:</strong> First registered user becomes the organization's admin.</li>
+                    <li class="list-group-item">⏳ <strong>Step 3:</strong> Wait for approval from the website administrator.</li>
+                    <li class="list-group-item">⚖️ <strong>Step 4:</strong> Convert admin to lawyer if needed.</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">👥 <strong>Step 5:</strong> Add more lawyers and junior members to manage cases.</li>
+                    <li class="list-group-item">📂 <strong>Step 6:</strong> Lawyers can start adding and managing cases.</li>
+                    <li class="list-group-item">✨ <strong>Step 7:</strong> Full control—edit, update, and delete cases and hearings.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="mt-5 text-center p-4 border rounded bg-white">
+        <h4 class="text-secondary fw-bold">Ready to simplify legal case management?</h4>
+        <p class="text-muted">Start using <strong>CourtDiary</strong> today!</p>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-lg">Sign Up Now</a>
+    </section>
 </div>
