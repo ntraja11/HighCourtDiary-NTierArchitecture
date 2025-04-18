@@ -1,0 +1,72 @@
+﻿@model CaseDetailsViewModel
+
+@{
+    ViewData["Title"] = "Case Details";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <h3>Case Details</h3>
+            <div class="mt-2 mt-md-0">
+                <a asp-controller="Case" asp-action="CaseList" asp-route-lawyerId="@Model.Case!.LawyerId" class="btn btn-dark">Back</a>
+                <a asp-controller="Case" asp-action="EditCase" asp-route-lawyerId="@Model.Case.LawyerId" class="btn btn-warning">Edit Case</a>
+                <a asp-controller="Hearing" asp-action="CreateHearing" asp-route-caseId="@Model.Case.Id" class="btn btn-light">Add Hearing</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Section: Basic Case Info -->
+                <div class="col-md-6 col-12">
+                    <p><strong>Case Number:</strong> @Model.Case!.CaseNumber</p>
+                    <p><strong>Case Name:</strong> @Model.Case.Name</p>
+                    <p><strong>Client Name:</strong> @Model.Case.ClientName</p>
+                    
+                </div>
+
+                <!-- Right Section: Court & Dates -->
+                <div class="col-md-6 col-12">                    
+                    <p><strong>Description:</strong> @Model.Case.Description</p>
+                </div>
+            </div>
+                      
+            
+        </div>
+    </div>
+
+    <!-- Hearing List -->
+    @if (Model.Case.HearingList != null && Model.Case.HearingList.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+                <h3>Hearing Details</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Hearing Date</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var hearing in Model.Case.HearingList)
+                        {
+                            <tr>
+                                <td>@hearing.Date.ToShortDateString()</td>
+                                <td>@hearing.Notes</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a asp-controller="Hearing" asp-action="EditHearing" asp-route-hearingId="@hearing.Id" class="btn btn-sm btn-warning">Edit</a>
+                                        <a asp-controller="Hearing" asp-action="DeleteHearing" asp-route-hearingId="@hearing.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,35 @@
+﻿@model Hearing
+
+@{
+    ViewData["Title"] = "Create Hearing";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h3>Create Hearing</h3>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Hearing" asp-action="CreateHearing" method="post">
+                <input type="hidden" asp-for="CaseId" name="CaseId" value="@Model.CaseId" />
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label">Date</label>
+                            <input asp-for="Date" type="date" class="form-control" id="Date" name="Date" required>
+                            <span asp-validation-for="Date" type="date" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Notes</label>
+                            <textarea asp-for="Notes" class="form-control" id="Notes" rows="4" name="Notes"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success mt-3">Create Hearing</button>
+            </form>
+        </div>
+    </div>
+</div>

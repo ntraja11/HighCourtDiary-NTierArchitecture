@@ -25,7 +25,7 @@ namespace CourtDiary.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public async Task<IActionResult> Cases(string lawyerId)
+        public async Task<IActionResult> CaseList(string lawyerId)
         {
             var caseListViewModel = new CaseListViewModel()
             {
@@ -79,6 +79,22 @@ namespace CourtDiary.Controllers
             var user = await _userManager.FindByEmailAsync(userEmail!);
 
             return RedirectToAction("Cases", new { lawyerId = user!.Id });
+        }
+
+        public async Task<IActionResult> CaseDetails(int caseId)
+        {
+            var caseFromDb = await _db.Cases.SingleOrDefaultAsync(c => c.Id == caseId);
+
+            if (caseFromDb == null)
+            {
+                return NotFound();
+            }
+            var caseDetailsViewModel = new CaseDetailsViewModel
+            {
+                Case = caseFromDb,
+                HearingList = await _db.Hearings.Where(h => h.CaseId == caseId).ToListAsync()
+            };
+            return View(caseDetailsViewModel);
         }
     }
 }
