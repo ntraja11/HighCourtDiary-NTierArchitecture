@@ -4,7 +4,10 @@
 
 <ul class="navbar-nav">
     <li class="nav-item">
-        <div class="form-check form-switch nav-link btn" id="theme-switch">Light Mode <i class="bi bi-sun"></i></div>
+        <div class="form-check form-switch nav-link btn d-flex gap-2" id="theme-switch">
+            <span>Light Mode</span>
+            <i class="bi bi-sun hide-on-mobile"></i>
+        </div>
     </li>
 @if (SignInManager.IsSignedIn(User))
 {

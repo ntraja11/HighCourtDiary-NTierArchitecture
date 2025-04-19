@@ -20,6 +20,6 @@ document.getElementById("theme-switch").addEventListener('click', function () {
 function updateThemeButton(theme) {
     let themeButton = document.getElementById("theme-switch");
     themeButton.innerHTML = theme === "light"
-        ? 'Light Mode <i class="bi bi-sun"></i>'
-        : 'Dark Mode <i class="bi bi-moon-stars-fill"></i>';
+        ? '<span>Light Mode</span><i class="bi bi-sun"></i>'
+        : '<span>Dark Mode</span><i class="bi bi-moon-stars-fill"></i>';
 }
