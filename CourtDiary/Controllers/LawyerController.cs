@@ -1,5 +1,6 @@
 ﻿using CourtDiary.Data.Context;
 using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories.Interfaces;
 using CourtDiary.Data.Utility;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -11,22 +12,20 @@ namespace CourtDiary.Controllers
 {
     public class LawyerController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LawyerController(CourtDiaryDbContext db,
+        public LawyerController(IUnitOfWork unitOfWork,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         public async Task<IActionResult> CreateLawyer(int organizationId)
         {
-            var organization = await _db.Organizations.FindAsync(organizationId);
+            var organization = await _unitOfWork.Organizations.GetAsync(o => o.Id == organizationId);
             if (organization == null)
             {
                 return NotFound();
@@ -48,14 +47,14 @@ namespace CourtDiary.Controllers
             {
                 return View(viewModel);
             }
-            var organization = await _db.Organizations.FindAsync(viewModel.Lawyer!.OrganizationId);
+            var organization = await _unitOfWork.Organizations.GetAsync(o => o.Id == viewModel.Lawyer!.OrganizationId);
             if (organization == null)
             {
                 return NotFound();
             }
             var user = new ApplicationUser
             {
-                Email = viewModel.Lawyer.Email,
+                Email = viewModel.Lawyer!.Email,
                 UserName = viewModel.Lawyer.Email,
                 FullName = viewModel.Lawyer.FullName,
                 EmailConfirmed = true,

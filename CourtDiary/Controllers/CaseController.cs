@@ -1,5 +1,6 @@
 ﻿using CourtDiary.Data.Context;
 using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories.Interfaces;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,17 +13,14 @@ namespace CourtDiary.Controllers
 {
     public class CaseController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public CaseController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        public CaseController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
         public async Task<IActionResult> CaseList(string lawyerId)
         {
@@ -30,7 +28,7 @@ namespace CourtDiary.Controllers
             {
                 LawyerId = lawyerId,
                 LawyerName = (await _userManager.FindByIdAsync(lawyerId))?.FullName ?? string.Empty,
-                Cases = await _db.Cases.Where(c => c.LawyerId == lawyerId).ToListAsync()
+                Cases = await _unitOfWork.Cases.GetAllAsync(c => c.LawyerId == lawyerId)
             };
 
             return View(caseListViewModel);
@@ -55,8 +53,8 @@ namespace CourtDiary.Controllers
                 }
 
                 //caseModel.LawyerId = user.Id;
-                _db.Cases.Add(caseModel);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.Cases.AddAsync(caseModel);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
             }
             return View(caseModel);
@@ -64,7 +62,7 @@ namespace CourtDiary.Controllers
 
         public async Task<IActionResult> EditCase(int caseId)
         {
-            var caseFromDb = await _db.Cases.FindAsync(caseId);
+            var caseFromDb = await _unitOfWork.Cases.GetAsync(c => c.Id == caseId);
             if (caseFromDb == null)
             {
                 return NotFound();
@@ -77,8 +75,8 @@ namespace CourtDiary.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Cases.Update(caseModel);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.Cases.UpdateAsync(caseModel);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
             }
             return View(caseModel);
@@ -88,12 +86,12 @@ namespace CourtDiary.Controllers
         //[Authorize(Roles = $"{StaticDetails.RoleSuperAdmin},{StaticDetails.RoleOrganizationAdmin}")]
         public async Task<IActionResult> DeleteCase(int caseId)
         {
-            var caseFromDb = await _db.Cases.AsNoTracking().SingleOrDefaultAsync(c => c.Id == caseId);
+            var caseFromDb = await _unitOfWork.Cases.GetAsync(c => c.Id == caseId);
 
             if(caseFromDb is not null)
             {
-                _db.Cases.Remove(caseFromDb);
-                await _db.SaveChangesAsync();               
+                await _unitOfWork.Cases.DeleteAsync(caseFromDb);
+                await _unitOfWork.SaveAsync();               
                 
             }
 
@@ -105,7 +103,7 @@ namespace CourtDiary.Controllers
 
         public async Task<IActionResult> CaseDetails(int caseId)
         {
-            var caseFromDb = await _db.Cases.SingleOrDefaultAsync(c => c.Id == caseId);
+            var caseFromDb = await _unitOfWork.Cases.GetAsync(c => c.Id == caseId);
 
             if (caseFromDb == null)
             {
@@ -114,7 +112,7 @@ namespace CourtDiary.Controllers
             var caseDetailsViewModel = new CaseDetailsViewModel
             {
                 Case = caseFromDb,
-                HearingList = await _db.Hearings.Where(h => h.CaseId == caseId).ToListAsync()
+                HearingList = await _unitOfWork.Hearings.GetAllAsync(h => h.CaseId == caseId)
             };
             return View(caseDetailsViewModel);
         }

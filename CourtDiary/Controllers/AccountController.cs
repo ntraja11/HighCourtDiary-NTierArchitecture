@@ -1,5 +1,6 @@
 ﻿using CourtDiary.Data.Context;
 using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories.Interfaces;
 using CourtDiary.Data.Utility;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -12,15 +13,15 @@ namespace CourtDiary.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AccountController(CourtDiaryDbContext db,
+        public AccountController(IUnitOfWork unitOfWork,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -35,7 +36,7 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var firstOrganization = _db.Organizations.Count() == 0;
+            var firstOrganization = _unitOfWork.Organizations.Count() == 0;
 
             var organization = new Organization
             {
@@ -45,8 +46,8 @@ namespace CourtDiary.Controllers
                 CreatedDate = DateOnly.FromDateTime(DateTime.Now),
                 CreatedBy = model.Email
             };
-            _db.Organizations.Add(organization);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.Organizations.AddAsync(organization);
+            await _unitOfWork.SaveAsync();
 
 
             var user = new ApplicationUser
@@ -98,7 +99,7 @@ namespace CourtDiary.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {

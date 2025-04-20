@@ -1,5 +1,6 @@
 ﻿using CourtDiary.Data.Context;
 using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories.Interfaces;
 using CourtDiary.Data.Utility;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -12,16 +13,13 @@ namespace CourtDiary.Controllers
 {
     public class OrganizationController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        public OrganizationController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        private readonly IUnitOfWork _unitOfWork;
+        public OrganizationController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         public async Task<IActionResult> Index()
@@ -46,7 +44,8 @@ namespace CourtDiary.Controllers
 
             if (isSuperAdmin)
             {
-                var organizations = await _db.Organizations.Where(o => o.CreatedBy != user!.Email).ToListAsync();
+                var organizations = await _unitOfWork.Organizations.GetAllAsync(o => o.CreatedBy != user!.Email);
+                //var organizations = await _db.Organizations.Where(o => o.CreatedBy != user!.Email).ToListAsync();
 
 
                 var approvedOrganizations = organizations.Where(o => o.IsActive).ToList();
@@ -77,13 +76,13 @@ namespace CourtDiary.Controllers
         [HttpPost]
         public async Task<IActionResult> ApproveOrganization(int organizationId)
         {
-            var organization = await _db.Organizations.FindAsync(organizationId);
+            var organization = await _unitOfWork.Organizations.GetAsync(o => o.Id == organizationId);
             if (organization != null)
             {
                 organization.IsActive = true;
 
                 organization.ActivatedDate = DateOnly.FromDateTime(DateTime.Now);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveAsync();
             }
 
             var orgAdmin = await _userManager.FindByEmailAsync(organization!.CreatedBy!);
@@ -132,7 +131,7 @@ namespace CourtDiary.Controllers
 
             foreach(var lawyer in organizationLawyers)
             {
-                var caseList = await _db.Cases.Where(c => c.LawyerId == lawyer.Id).ToListAsync();
+                var caseList = await _unitOfWork.Cases.GetAllAsync(c => c.LawyerId == lawyer.Id);
                 cases.AddRange(caseList);
             }
 
@@ -140,8 +139,8 @@ namespace CourtDiary.Controllers
 
             return new OrganizationAdminViewModel
             {
-                Organization = await _db.Organizations
-                                    .FirstOrDefaultAsync(o => o.CreatedBy == user!.Email),
+                Organization = await _unitOfWork.Organizations
+                                    .GetAsync(o => o.CreatedBy == user!.Email),
                 OrganizationAdmin = user,
                 Lawyers = organizationLawyers,
                 Cases = cases

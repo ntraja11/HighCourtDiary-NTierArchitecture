@@ -1,5 +1,6 @@
 ﻿using CourtDiary.Data.Context;
 using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,17 +9,14 @@ namespace CourtDiary.Controllers
 {
     public class HearingController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public HearingController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        public HearingController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
         public IActionResult CreateHearing(int caseId)
         {
@@ -31,8 +29,8 @@ namespace CourtDiary.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Hearings.Add(hearing);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.Hearings.AddAsync(hearing);
+                await _unitOfWork.SaveAsync();
 
                 var userEmail = User.FindFirstValue(ClaimTypes.Email);
                 var user = await _userManager.FindByEmailAsync(userEmail!);
@@ -46,9 +44,9 @@ namespace CourtDiary.Controllers
             return View(hearing);
         }
 
-        public IActionResult EditHearing(int hearingId)
+        public async Task<IActionResult> EditHearing(int hearingId)
         {
-            var hearing = _db.Hearings.Find(hearingId);
+            var hearing = await _unitOfWork.Hearings.GetAsync(o => o.Id == hearingId);
             if (hearing == null)
             {
                 return NotFound();
@@ -61,8 +59,8 @@ namespace CourtDiary.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Hearings.Update(hearing);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.Hearings.UpdateAsync(hearing);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
             }
             return View(hearing);
@@ -71,13 +69,14 @@ namespace CourtDiary.Controllers
         
         public async Task<IActionResult> DeleteHearing(int hearingId)
         {
-            var hearingToDelete = _db.Hearings.Find(hearingId);
+            var hearingToDelete = await _unitOfWork.Hearings.GetAsync(h => h.Id == hearingId);
             if (hearingToDelete == null)
             {
                 return NotFound();
             }
-            _db.Hearings.Remove(hearingToDelete);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.Hearings.DeleteAsync(hearingToDelete);
+            await _unitOfWork.SaveAsync();
+
             return RedirectToAction("CaseDetails", "Case", new { caseId = hearingToDelete.CaseId });
         }
     }
