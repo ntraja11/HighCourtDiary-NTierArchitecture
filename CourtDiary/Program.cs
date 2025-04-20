@@ -1,6 +1,6 @@
-using CourtDiary.Data;
+using CourtDiary.Data.Context;
 using CourtDiary.Data.Initialize;
-using CourtDiary.Models;
+using CourtDiary.Data.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
