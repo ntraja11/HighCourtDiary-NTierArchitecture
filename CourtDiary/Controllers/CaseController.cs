@@ -1,6 +1,5 @@
-﻿using CourtDiary.Data;
-using CourtDiary.Models;
-using CourtDiary.Utility;
+﻿using CourtDiary.Data.Context;
+using CourtDiary.Data.Models;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

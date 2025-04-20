@@ -1,6 +1,6 @@
-﻿using CourtDiary.Data;
-using CourtDiary.Models;
-using CourtDiary.Utility;
+﻿using CourtDiary.Data.Context;
+using CourtDiary.Data.Models;
+using CourtDiary.Data.Utility;
 using CourtDiary.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace CourtDiary.Controllers
 
             var isSuperAdmin = await _userManager.IsInRoleAsync(user, StaticDetails.RoleSuperAdmin);
             var isOrganizationAdmin = await _userManager.IsInRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
-            var isLawyer = await _userManager.IsInRoleAsync(user, StaticDetails.RoleLawyer);
+            var isLawyer = (await _userManager.IsInRoleAsync(user, StaticDetails.RoleLawyer)) || user.IsLawyer ;
             var isJunior = await _userManager.IsInRoleAsync(user, StaticDetails.RoleJunior);
 
             if (isSuperAdmin)
@@ -60,7 +60,7 @@ namespace CourtDiary.Controllers
 
                 return View("SuperAdminView", superAdminViewModel);
             }
-            else if(isOrganizationAdmin)
+            else if(isOrganizationAdmin && !user.IsLawyer)
             {
                 return await ShowOrganizationAdminView(user);
             }

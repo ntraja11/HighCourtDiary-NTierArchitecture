@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/CourtDiary/Properties/ServiceDependencies/CourtDiary-Dev - Web Deploy/profile.arm.json
+/CourtDiary/.config/dotnet-tools.json

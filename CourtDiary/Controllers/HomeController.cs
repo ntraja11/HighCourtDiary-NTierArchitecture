@@ -1,4 +1,4 @@
-using CourtDiary.Models;
+using CourtDiary.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
