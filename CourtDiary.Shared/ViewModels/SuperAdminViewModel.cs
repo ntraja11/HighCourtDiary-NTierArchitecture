@@ -1,6 +1,6 @@
-﻿using CourtDiary.Data.Models;
+﻿using CourtDiary.Domain.Models;
 
-namespace CourtDiary.ViewModels
+namespace CourtDiary.Shared.ViewModels
 {
     public class SuperAdminViewModel
     {

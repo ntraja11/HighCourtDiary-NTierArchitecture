@@ -1,152 +1,52 @@
-﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using CourtDiary.Data.Repositories.Interfaces;
-using CourtDiary.Data.Utility;
-using CourtDiary.ViewModels;
-using Microsoft.AspNetCore.Identity;
+﻿using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Data;
 
 namespace CourtDiary.Controllers
 {
     public class LawyerController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILawyerService _lawyerService;
 
-        public LawyerController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        public LawyerController(ILawyerService lawyerService)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _lawyerService = lawyerService;
         }
 
         public async Task<IActionResult> CreateLawyer(int organizationId)
         {
-            var organization = await _unitOfWork.Organizations.GetAsync(o => o.Id == organizationId);
-            if (organization == null)
-            {
-                return NotFound();
-            }
-            var createLawyerViewModel = new CreateLawyerViewModel
-            {
-                Lawyer = new ApplicationUser
-                {
-                    OrganizationId = organization.Id
-                }
-            };
-            return View("CreateLawyer", createLawyerViewModel);
+            var viewModel = await _lawyerService.GetCreateLawyerViewModelAsync(organizationId);
+            return viewModel != null ? View("CreateLawyer", viewModel) : NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateLawyer(CreateLawyerViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
-            var organization = await _unitOfWork.Organizations.GetAsync(o => o.Id == viewModel.Lawyer!.OrganizationId);
-            if (organization == null)
-            {
-                return NotFound();
-            }
-            var user = new ApplicationUser
-            {
-                Email = viewModel.Lawyer!.Email,
-                UserName = viewModel.Lawyer.Email,
-                FullName = viewModel.Lawyer.FullName,
-                EmailConfirmed = true,
-                OrganizationId = organization.Id,
-                IsJunior = (viewModel!.SelectedRole == StaticDetails.RoleJunior)
-                
-            };
-            var result = await _userManager.CreateAsync(user, viewModel!.Password!);
+            if (!ModelState.IsValid) return View(viewModel);
 
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, StaticDetails.RoleLawyer);
-
-                return RedirectToAction("Index", "Organization");
-            }
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-            return View(viewModel);
+            var success = await _lawyerService.CreateLawyerAsync(viewModel);
+            return success ? RedirectToAction("Index", "Organization") : View(viewModel);
         }
 
         public async Task<IActionResult> EditLawyer(string lawyerId)
         {
-            var lawyer = await _userManager.FindByIdAsync(lawyerId);
-            if (lawyer == null)
-            {
-                return NotFound();
-            }
-
-            var roles = await _userManager.GetRolesAsync(lawyer);
-
-            return View(GetEditViewModel(lawyer, roles));
-        }
-
-        private static EditLawyerViewModel GetEditViewModel(ApplicationUser lawyer, IList<string> roles)
-        {
-            return new EditLawyerViewModel
-            {
-                Lawyer = lawyer,
-                SelectedRole = roles.FirstOrDefault(),
-            };
+            var viewModel = await _lawyerService.GetEditLawyerViewModelAsync(lawyerId);
+            return viewModel != null ? View(viewModel) : NotFound();
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditLawyer(EditLawyerViewModel editViewmodel)
+        public async Task<IActionResult> EditLawyer(EditLawyerViewModel editViewModel)
         {
-            if (ModelState.IsValid)
-            {
-                var lawyerFromDb = await _userManager.FindByIdAsync(editViewmodel.Lawyer!.Id);
+            if (!ModelState.IsValid) return View(editViewModel);
 
-                if(lawyerFromDb == null) { return NotFound(); }
-
-                lawyerFromDb.FullName = editViewmodel.Lawyer.FullName;
-                lawyerFromDb.Email = editViewmodel.Lawyer.Email;
-                lawyerFromDb.NormalizedEmail = editViewmodel.Lawyer.Email!.ToUpper();
-                lawyerFromDb.UserName = editViewmodel.Lawyer.Email;
-                lawyerFromDb.NormalizedUserName = editViewmodel.Lawyer.Email.ToUpper();
-                lawyerFromDb.PhoneNumber = editViewmodel.Lawyer.PhoneNumber;
-                lawyerFromDb.IsJunior = (editViewmodel!.SelectedRole == StaticDetails.RoleJunior);
-                
-                var result = await _userManager.UpdateAsync(lawyerFromDb);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Organization");
-                }                               
-            }
-
-            var roles = await _userManager.GetRolesAsync(editViewmodel.Lawyer!);
-
-            return View(GetEditViewModel(editViewmodel.Lawyer!, roles));
+            var success = await _lawyerService.EditLawyerAsync(editViewModel);
+            return success ? RedirectToAction("Index", "Organization") : View(editViewModel);
         }
 
         public async Task<IActionResult> RemoveLawyer(string lawyerId)
         {
-            var lawyer = await _userManager.FindByIdAsync(lawyerId);
-
-            if(lawyer == null) { return NotFound(); }
-
-            var result = await _userManager.DeleteAsync(lawyer);
-            if (result.Succeeded) 
-            {
-                return RedirectToAction("Index", "Organization");
-            }
-
-            foreach(var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-
-            return RedirectToAction("Index", "Organization");
+            var success = await _lawyerService.RemoveLawyerAsync(lawyerId);
+            return success ? RedirectToAction("Index", "Organization") : NotFound();
         }
     }
 }

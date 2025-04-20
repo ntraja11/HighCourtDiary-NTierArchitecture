@@ -1,9 +1,9 @@
-﻿using CourtDiary.Data.Models;
+﻿using CourtDiary.Domain.Models;
 
 namespace CourtDiary.Data.Repositories.Interfaces
 {
     public interface IOrganizationRepository : IRepository<Organization>
     {
-        int Count();  
+        int Count();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CourtDiary.ViewModels
+namespace CourtDiary.Shared.ViewModels
 {
     public class LoginViewModel
     {

@@ -1,83 +1,51 @@
-﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using CourtDiary.Data.Repositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace CourtDiary.Controllers
 {
     public class HearingController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHearingService _hearingService;
 
-        public HearingController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> userManager)
+        public HearingController(IHearingService hearingService)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _hearingService = hearingService;
         }
+
         public IActionResult CreateHearing(int caseId)
         {
-            var hearing = new Hearing { CaseId = caseId };
-            return View(hearing);
+            return View(new Hearing { CaseId = caseId });
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateHearing(Hearing hearing)
         {
-            if (ModelState.IsValid)
-            {
-                await _unitOfWork.Hearings.AddAsync(hearing);
-                await _unitOfWork.SaveAsync();
+            if (!ModelState.IsValid) return View(hearing);
 
-                var userEmail = User.FindFirstValue(ClaimTypes.Email);
-                var user = await _userManager.FindByEmailAsync(userEmail!);
-                if (user == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-
-                return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
-            }
-            return View(hearing);
+            var success = await _hearingService.CreateHearingAsync(hearing);
+            return success ? RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId }) : View(hearing);
         }
 
         public async Task<IActionResult> EditHearing(int hearingId)
         {
-            var hearing = await _unitOfWork.Hearings.GetAsync(o => o.Id == hearingId);
-            if (hearing == null)
-            {
-                return NotFound();
-            }
-            return View(hearing);
+            var hearing = await _hearingService.GetHearingAsync(hearingId);
+            return hearing != null ? View(hearing) : NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> EditHearing(Hearing hearing)
         {
-            if (ModelState.IsValid)
-            {
-                await _unitOfWork.Hearings.UpdateAsync(hearing);
-                await _unitOfWork.SaveAsync();
-                return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
-            }
-            return View(hearing);
-        }                
+            if (!ModelState.IsValid) return View(hearing);
 
-        
+            var success = await _hearingService.UpdateHearingAsync(hearing);
+            return success ? RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId }) : View(hearing);
+        }
+
         public async Task<IActionResult> DeleteHearing(int hearingId)
         {
-            var hearingToDelete = await _unitOfWork.Hearings.GetAsync(h => h.Id == hearingId);
-            if (hearingToDelete == null)
-            {
-                return NotFound();
-            }
-            await _unitOfWork.Hearings.DeleteAsync(hearingToDelete);
-            await _unitOfWork.SaveAsync();
-
-            return RedirectToAction("CaseDetails", "Case", new { caseId = hearingToDelete.CaseId });
+            var success = await _hearingService.DeleteHearingAsync(hearingId);
+            return success ? RedirectToAction("CaseDetails", "Case") : NotFound();
         }
     }
 }

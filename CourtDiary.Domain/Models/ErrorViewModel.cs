@@ -1,4 +1,4 @@
-namespace CourtDiary.Data.Models
+namespace CourtDiary.Domain.Models
 {
     public class ErrorViewModel
     {

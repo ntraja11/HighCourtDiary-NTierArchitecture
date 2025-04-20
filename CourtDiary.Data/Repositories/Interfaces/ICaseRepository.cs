@@ -1,4 +1,4 @@
-﻿using CourtDiary.Data.Models;
+﻿using CourtDiary.Domain.Models;
 
 namespace CourtDiary.Data.Repositories.Interfaces
 {

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using CourtDiary.Domain.Models
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
@@ -19,20 +23,63 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CourtDiary</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
+                        @{
+                            var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                            var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                        }
+
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")"
+                                asp-controller="Home" asp-action="Index">
+                                Home
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+                            <a class="nav-link @(currentController == "Home" && currentAction == "About" ? "active" : "")"
+                                asp-controller="Home" asp-action="About">
+                                About
+                            </a>
                         </li>
-                        <li class="nav-item">
-                        <a class="nav-link" asp-controller="Organization" asp-action="Index">Organization</a>
-                        </li>
+
+
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            var user = await UserManager.GetUserAsync(User);
+                            var isSuperAdmin = await UserManager.IsInRoleAsync(user, StaticDetails.RoleSuperAdmin);
+                            var isOrganizationAdmin = await UserManager.IsInRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
+
+                            
+
+                            @if (isSuperAdmin || isOrganizationAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentController == "Organization" && currentAction == "OrganizationDashboard" ? "active" : "")"
+                                       asp-controller="Organization" asp-action="OrganizationDashboard">
+                                        Organization Dashboard
+                                    </a>
+                                </li>
+                            }
+
+                            @if (user.IsLawyer || user.IsJunior)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentController == "Case" && currentAction == "CaseList" ? "active" : "")"
+                                       asp-controller="Case" asp-action="CaseList" asp-route-lawyerId="@user.Id">
+                                        Cases
+                                    </a>
+                                </li>
+                            }
+                        }
+
+                        
+
+                        
                     </ul>
                     
                     <partial name="_LoginPartial" />

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CourtDiary.Data.Repositories.Interfaces
+﻿namespace CourtDiary.Data.Repositories.Interfaces
 {
     public interface IUnitOfWork
     {
