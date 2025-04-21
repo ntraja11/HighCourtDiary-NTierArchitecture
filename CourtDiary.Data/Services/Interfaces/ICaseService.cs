@@ -9,7 +9,7 @@ namespace CourtDiary.Data.Services.Interfaces
         Task<Case?> GetCaseAsync(int caseId);
         Task<bool> CreateCaseAsync(Case caseModel);
         Task<bool> UpdateCaseAsync(Case caseModel);
-        Task<bool> DeleteCaseAsync(int caseId);
+        Task<string> DeleteCaseAsync(int caseId);
         Task<CaseDetailsViewModel?> GetCaseDetailsAsync(int caseId);
     }
 }

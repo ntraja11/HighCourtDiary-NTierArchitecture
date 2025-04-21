@@ -1,6 +1,8 @@
-﻿using CourtDiary.Data.Services.Interfaces;
+﻿using CourtDiary.Data.Services;
+using CourtDiary.Data.Services.Interfaces;
 using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace CourtDiary.Controllers
 {
@@ -24,7 +26,14 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(hearing);
 
             var success = await _hearingService.CreateHearingAsync(hearing);
-            return success ? RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId }) : View(hearing);
+            if(success) {
+                TempData["success"] = "Hearing created successfully.";
+                return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
+            }
+            else
+                TempData["error"] = "Failed to create hearing. Please try again.";
+
+            return View(hearing);
         }
 
         public async Task<IActionResult> EditHearing(int hearingId)
@@ -39,13 +48,29 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(hearing);
 
             var success = await _hearingService.UpdateHearingAsync(hearing);
-            return success ? RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId }) : View(hearing);
+            if (success)
+            {
+                TempData["success"] = "Hearing updated successfully.";
+                return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
+            }
+            else
+                TempData["error"] = "Failed to update hearing. Please try again.";
+
+            return View(hearing);
         }
 
         public async Task<IActionResult> DeleteHearing(int hearingId)
         {
-            var success = await _hearingService.DeleteHearingAsync(hearingId);
-            return success ? RedirectToAction("CaseDetails", "Case") : NotFound();
+            var caseId = await _hearingService.DeleteHearingAsync(hearingId);
+            if(caseId > 0)
+            {
+                TempData["success"] = "Hearing deleted successfully.";
+                return RedirectToAction("CaseDetails", "Case", new { caseId });
+            }
+            else
+                TempData["error"] = "Failed to delete hearing. Please try again.";
+
+            return NotFound();
         }
     }
 }

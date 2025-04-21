@@ -50,14 +50,14 @@ namespace CourtDiary.Data.Services
             return true;
         }
 
-        public async Task<bool> DeleteCaseAsync(int caseId)
+        public async Task<string> DeleteCaseAsync(int caseId)
         {
             var caseFromDb = await _unitOfWork.Cases.GetAsync(c => c.Id == caseId);
-            if (caseFromDb == null) return false;
+            if (caseFromDb == null) return "";
 
             await _unitOfWork.Cases.DeleteAsync(caseFromDb);
             await _unitOfWork.SaveAsync();
-            return true;
+            return caseFromDb.LawyerId!;
         }
 
         public async Task<CaseDetailsViewModel?> GetCaseDetailsAsync(int caseId)

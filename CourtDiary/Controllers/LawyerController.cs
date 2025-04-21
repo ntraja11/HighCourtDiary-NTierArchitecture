@@ -25,7 +25,14 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(viewModel);
 
             var success = await _lawyerService.CreateLawyerAsync(viewModel);
-            return success ? RedirectToAction("Index", "Organization") : View(viewModel);
+            if(success)
+            {
+                TempData["success"] = "Lawyer created successfully.";
+                return RedirectToAction("OrganizationDashboard", "Organization");
+            }
+            else
+                TempData["error"] = "Failed to create lawyer. Please try again.";
+            return View(viewModel);
         }
 
         public async Task<IActionResult> EditLawyer(string lawyerId)
@@ -40,13 +47,29 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(editViewModel);
 
             var success = await _lawyerService.EditLawyerAsync(editViewModel);
-            return success ? RedirectToAction("Index", "Organization") : View(editViewModel);
+            if (success)
+            {
+                TempData["success"] = "Lawyer updated successfully.";
+                return RedirectToAction("OrganizationDashboard", "Organization");
+            }
+            else
+                TempData["error"] = "Failed to update lawyer. Please try again.";
+            return View(editViewModel);
         }
 
         public async Task<IActionResult> RemoveLawyer(string lawyerId)
         {
             var success = await _lawyerService.RemoveLawyerAsync(lawyerId);
-            return success ? RedirectToAction("Index", "Organization") : NotFound();
+
+            if (success)
+            {
+                TempData["success"] = "Lawyer deleted successfully.";
+                return RedirectToAction("OrganizationDashboard", "Organization");
+            }
+            else
+                TempData["error"] = "Failed to delete lawyer. Please try again.";
+
+            return NotFound();
         }
     }
 }

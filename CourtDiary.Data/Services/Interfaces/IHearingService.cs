@@ -7,6 +7,6 @@ namespace CourtDiary.Data.Services.Interfaces
         Task<Hearing?> GetHearingAsync(int hearingId);
         Task<bool> CreateHearingAsync(Hearing hearing);
         Task<bool> UpdateHearingAsync(Hearing hearing);
-        Task<bool> DeleteHearingAsync(int hearingId);
+        Task<int> DeleteHearingAsync(int hearingId);
     }
 }

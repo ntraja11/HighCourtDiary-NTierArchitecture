@@ -1,6 +1,8 @@
 ﻿using CourtDiary.Data.Services.Interfaces;
 using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CourtDiary.Controllers
 {
@@ -29,7 +31,15 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(caseModel);
 
             var success = await _caseService.CreateCaseAsync(caseModel);
-            return success ? RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId }) : View(caseModel);
+            if (success)
+            {
+                TempData["success"] = "Case created successfully.";
+                return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
+            }
+            else
+                TempData["error"] = "Failed to create case. Please try again.";
+
+            return View(caseModel);
         }
 
         public async Task<IActionResult> EditCase(int caseId)
@@ -44,15 +54,32 @@ namespace CourtDiary.Controllers
             if (!ModelState.IsValid) return View(caseModel);
 
             var success = await _caseService.UpdateCaseAsync(caseModel);
-            return success ? RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId }) : View(caseModel);
+            if (success)
+            {
+                TempData["success"] = "Case updated successfully.";
+                return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
+            }
+            else
+                TempData["error"] = "Failed to update case. Please try again.";
+
+            return View(caseModel);
         }
 
         public async Task<IActionResult> DeleteCase(int caseId)
         {
-            var success = await _caseService.DeleteCaseAsync(caseId);
-            return success ? RedirectToAction("CaseList") : NotFound();
-        }
+            var lawyerId = await _caseService.DeleteCaseAsync(caseId);
 
+            if(!lawyerId.IsNullOrEmpty())
+            {
+                TempData["success"] = "Case deleted successfully.";
+                return RedirectToAction("CaseList", new { lawyerId });
+            }
+            else
+                TempData["error"] = "Failed to delete case. Please try again.";
+
+            return NotFound();
+        }
+        
         public async Task<IActionResult> CaseDetails(int caseId)
         {
             var caseDetailsViewModel = await _caseService.GetCaseDetailsAsync(caseId);

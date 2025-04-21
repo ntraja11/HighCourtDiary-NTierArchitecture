@@ -36,14 +36,14 @@ namespace CourtDiary.Data.Services
             return true;
         }
 
-        public async Task<bool> DeleteHearingAsync(int hearingId)
+        public async Task<int> DeleteHearingAsync(int hearingId)
         {
             var hearingToDelete = await _unitOfWork.Hearings.GetAsync(h => h.Id == hearingId);
-            if (hearingToDelete == null) return false;
+            if (hearingToDelete == null) return 0;
 
             await _unitOfWork.Hearings.DeleteAsync(hearingToDelete);
             await _unitOfWork.SaveAsync();
-            return true;
+            return hearingToDelete.CaseId;
         }
     }
 }

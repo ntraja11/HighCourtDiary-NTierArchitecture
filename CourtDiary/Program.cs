@@ -30,6 +30,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<IHearingService, HearingService>();
+builder.Services.AddScoped<ILawyerService, LawyerService>();
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

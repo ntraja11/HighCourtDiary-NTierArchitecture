@@ -20,16 +20,10 @@ namespace CourtDiary.Controllers
             var user = await _userService.GetAuthenticatedUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");            
 
-            if (await _userService.IsLawyerAsync(user) || await _userService.IsJuniorAsync(user))
+            if (!await _userService.IsOrganizationAdminAsync(user) && (await _userService.IsLawyerAsync(user) || await _userService.IsJuniorAsync(user)))
                 return RedirectToAction("CaseList", "Case", new { lawyerId = user.Id });
-
-            if (await _userService.IsOrganizationAdminAsync(user))
-                return RedirectToAction("OrganizationDashboard");
-
-            if (await _userService.IsSuperAdminAsync(user))
-                return View("SuperAdmin", await _organizationService.GetSuperAdminDashboardAsync(user));
-
-            return RedirectToAction("Index", "Home");
+                       
+            return RedirectToAction("OrganizationDashboard", "Organization");
         }
 
         public async Task<IActionResult> OrganizationDashboard()
