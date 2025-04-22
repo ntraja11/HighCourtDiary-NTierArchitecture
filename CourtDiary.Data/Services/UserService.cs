@@ -21,7 +21,7 @@ namespace CourtDiary.Data.Services
             _signInManager = signInManager;
         }
 
-        public async Task<bool> RegisterAsync(RegistrationViewModel model)
+        public async Task<string> RegisterAsync(RegistrationViewModel model)
         {
             if (!string.IsNullOrEmpty(model.Email))
             {
@@ -53,10 +53,15 @@ namespace CourtDiary.Data.Services
                 {
                     var role = firstOrganization ? StaticDetails.RoleSuperAdmin : StaticDetails.RoleOrganizationAdmin;
                     await _userManager.AddToRoleAsync(user, role);
-                    return true;
+                    return "";
+                }
+                else
+                {
+                    var errorMessages = string.Join("; ", result.Errors.Select(e => e.Description));
+                    return errorMessages;
                 }
             }
-            return false;
+            return "An unexpected error occured";
         }
 
         public async Task<bool> LoginAsync(LoginViewModel model)

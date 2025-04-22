@@ -1,6 +1,7 @@
 ﻿using CourtDiary.Data.Services.Interfaces;
 using CourtDiary.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CourtDiary.Controllers
 {
@@ -20,10 +21,18 @@ namespace CourtDiary.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var success = await _userService.RegisterAsync(model);
-            if (success) return RedirectToAction("Login");
+            var message = await _userService.RegisterAsync(model);
+            if (message.IsNullOrEmpty())
+            {
+                TempData["Success"] = "Account created successfully";
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData["error"] = message;
+                ModelState.AddModelError("", message);
+            }
 
-            ModelState.AddModelError("", "Failed to create account.");
             return View(model);
         }
 

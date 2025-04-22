@@ -6,7 +6,7 @@ namespace CourtDiary.Data.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> RegisterAsync(RegistrationViewModel model);
+        Task<string> RegisterAsync(RegistrationViewModel model);
         Task<bool> LoginAsync(LoginViewModel model);
         Task<ApplicationUser?> GetUserByEmailAsync(string email);
         Task LogoutAsync();
