@@ -24,14 +24,22 @@ namespace CourtDiary.Controllers
         {
             if (!ModelState.IsValid) return View(viewModel);
 
-            var success = await _lawyerService.CreateLawyerAsync(viewModel);
-            if(success)
+            try
             {
-                TempData["success"] = "Lawyer created successfully.";
-                return RedirectToAction("OrganizationDashboard", "Organization");
+                var success = await _lawyerService.CreateLawyerAsync(viewModel);
+                if (success)
+                {
+                    TempData["success"] = "Lawyer created successfully.";
+                    return RedirectToAction("OrganizationDashboard", "Organization");
+                }                
             }
-            else
-                TempData["error"] = "Failed to create lawyer. Please try again.";
+            catch(Exception ex)
+            {
+                TempData["error"] = ex.Message;
+            }
+
+            
+            
             return View(viewModel);
         }
 

@@ -47,8 +47,20 @@ namespace CourtDiary.Data.Services
                 IsJunior = viewModel.SelectedRole == StaticDetails.RoleJunior
             };
 
-            var result = await _userManager.CreateAsync(user, viewModel.Password!);
-            if (!result.Succeeded) return false;
+            try
+            {
+                var result = await _userManager.CreateAsync(user, viewModel.Password!);
+
+                if (!result.Succeeded)
+                {
+                    var errorMessages = string.Join("; ", result.Errors.Select(e => e.Description));
+                    throw new Exception($"User creation failed: {errorMessages}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
 
             await _userManager.AddToRoleAsync(user, StaticDetails.RoleLawyer);
             return true;
