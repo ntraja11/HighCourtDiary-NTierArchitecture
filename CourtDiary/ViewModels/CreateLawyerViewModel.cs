@@ -1,5 +1,5 @@
-﻿using CourtDiary.Models;
-using CourtDiary.Utility;
+﻿using CourtDiary.Data.Models;
+using CourtDiary.Data.Utility;
 using System.ComponentModel.DataAnnotations;
 
 namespace CourtDiary.ViewModels
