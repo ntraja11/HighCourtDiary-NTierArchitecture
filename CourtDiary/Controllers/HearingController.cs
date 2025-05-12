@@ -1,84 +1,76 @@
-﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using CourtDiary.Data.Services;
+using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace CourtDiary.Controllers
 {
     public class HearingController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IHearingService _hearingService;
 
-        public HearingController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        public HearingController(IHearingService hearingService)
         {
-            _db = db;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _hearingService = hearingService;
         }
+
         public IActionResult CreateHearing(int caseId)
         {
-            var hearing = new Hearing { CaseId = caseId };
-            return View(hearing);
+            return View(new Hearing { CaseId = caseId });
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateHearing(Hearing hearing)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Hearings.Add(hearing);
-                await _db.SaveChangesAsync();
+            if (!ModelState.IsValid) return View(hearing);
 
-                var userEmail = User.FindFirstValue(ClaimTypes.Email);
-                var user = await _userManager.FindByEmailAsync(userEmail!);
-                if (user == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-
+            var success = await _hearingService.CreateHearingAsync(hearing);
+            if(success) {
+                TempData["success"] = "Hearing created successfully.";
                 return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
             }
+            else
+                TempData["error"] = "Failed to create hearing. Please try again.";
+
             return View(hearing);
         }
 
-        public IActionResult EditHearing(int hearingId)
+        public async Task<IActionResult> EditHearing(int hearingId)
         {
-            var hearing = _db.Hearings.Find(hearingId);
-            if (hearing == null)
-            {
-                return NotFound();
-            }
-            return View(hearing);
+            var hearing = await _hearingService.GetHearingAsync(hearingId);
+            return hearing != null ? View(hearing) : NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> EditHearing(Hearing hearing)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(hearing);
+
+            var success = await _hearingService.UpdateHearingAsync(hearing);
+            if (success)
             {
-                _db.Hearings.Update(hearing);
-                await _db.SaveChangesAsync();
+                TempData["success"] = "Hearing updated successfully.";
                 return RedirectToAction("CaseDetails", "Case", new { caseId = hearing.CaseId });
             }
-            return View(hearing);
-        }                
+            else
+                TempData["error"] = "Failed to update hearing. Please try again.";
 
-        
+            return View(hearing);
+        }
+
         public async Task<IActionResult> DeleteHearing(int hearingId)
         {
-            var hearingToDelete = _db.Hearings.Find(hearingId);
-            if (hearingToDelete == null)
+            var caseId = await _hearingService.DeleteHearingAsync(hearingId);
+            if(caseId > 0)
             {
-                return NotFound();
+                TempData["success"] = "Hearing deleted successfully.";
+                return RedirectToAction("CaseDetails", "Case", new { caseId });
             }
-            _db.Hearings.Remove(hearingToDelete);
-            await _db.SaveChangesAsync();
-            return RedirectToAction("CaseDetails", "Case", new { caseId = hearingToDelete.CaseId });
+            else
+                TempData["error"] = "Failed to delete hearing. Please try again.";
+
+            return NotFound();
         }
     }
 }

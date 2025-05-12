@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CourtDiary.Data.Models
+namespace CourtDiary.Domain.Models
 {
     public class Case
     {

@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourtDiary", "CourtDiary\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourtDiary.Data", "CourtDiary.Data\CourtDiary.Data.csproj", "{A74736DB-F12F-4A70-82E8-748182CC085A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourtDiary.Shared", "CourtDiary.Shared\CourtDiary.Shared.csproj", "{DDDCCE5E-7684-4CA0-AAD0-5ADF5326FFB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourtDiary.Domain", "CourtDiary.Domain\CourtDiary.Domain.csproj", "{6AA75B7F-114C-49F0-8065-EA817A9B73EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +28,14 @@ Global
 		{A74736DB-F12F-4A70-82E8-748182CC085A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A74736DB-F12F-4A70-82E8-748182CC085A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A74736DB-F12F-4A70-82E8-748182CC085A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDDCCE5E-7684-4CA0-AAD0-5ADF5326FFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDCCE5E-7684-4CA0-AAD0-5ADF5326FFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDCCE5E-7684-4CA0-AAD0-5ADF5326FFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDCCE5E-7684-4CA0-AAD0-5ADF5326FFB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA75B7F-114C-49F0-8065-EA817A9B73EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA75B7F-114C-49F0-8065-EA817A9B73EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA75B7F-114C-49F0-8065-EA817A9B73EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA75B7F-114C-49F0-8065-EA817A9B73EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

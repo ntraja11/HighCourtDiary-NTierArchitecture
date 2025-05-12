@@ -1,4 +1,4 @@
-﻿using CourtDiary.Data.Models;
+﻿using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

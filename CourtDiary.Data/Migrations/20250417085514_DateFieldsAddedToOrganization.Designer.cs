@@ -25,7 +25,7 @@ namespace CourtDiary.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CourtDiary.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("CourtDiary.Domain.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -103,7 +103,7 @@ namespace CourtDiary.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CourtDiary.Data.Models.Organization", b =>
+            modelBuilder.Entity("CourtDiary.Domain.Models.Organization", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,11 +265,11 @@ namespace CourtDiary.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CourtDiary.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("CourtDiary.Domain.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("CourtDiary.Data.Models.Organization", "Organization")
+                    b.HasOne("CourtDiary.Domain.Models.Organization", "Organization")
                         .WithOne("Owner")
-                        .HasForeignKey("CourtDiary.Data.Models.ApplicationUser", "OrganizationId");
+                        .HasForeignKey("CourtDiary.Domain.Models.ApplicationUser", "OrganizationId");
 
                     b.Navigation("Organization");
                 });
@@ -285,7 +285,7 @@ namespace CourtDiary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CourtDiary.Data.Models.ApplicationUser", null)
+                    b.HasOne("CourtDiary.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -294,7 +294,7 @@ namespace CourtDiary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CourtDiary.Data.Models.ApplicationUser", null)
+                    b.HasOne("CourtDiary.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -309,7 +309,7 @@ namespace CourtDiary.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CourtDiary.Data.Models.ApplicationUser", null)
+                    b.HasOne("CourtDiary.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -318,14 +318,14 @@ namespace CourtDiary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CourtDiary.Data.Models.ApplicationUser", null)
+                    b.HasOne("CourtDiary.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CourtDiary.Data.Models.Organization", b =>
+            modelBuilder.Entity("CourtDiary.Domain.Models.Organization", b =>
                 {
                     b.Navigation("Owner");
                 });

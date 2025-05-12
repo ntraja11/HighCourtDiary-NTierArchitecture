@@ -1,4 +1,4 @@
-﻿namespace CourtDiary.Data.Utility
+﻿namespace CourtDiary.Shared.Utility
 {
     public static class StaticDetails
     {

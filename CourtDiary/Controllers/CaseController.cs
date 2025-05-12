@@ -1,39 +1,23 @@
-﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using CourtDiary.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CourtDiary.Controllers
 {
     public class CaseController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ICaseService _caseService;
 
-        public CaseController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        public CaseController(ICaseService caseService)
         {
-            _db = db;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _caseService = caseService;
         }
+
         public async Task<IActionResult> CaseList(string lawyerId)
         {
-            var caseListViewModel = new CaseListViewModel()
-            {
-                LawyerId = lawyerId,
-                LawyerName = (await _userManager.FindByIdAsync(lawyerId))?.FullName ?? string.Empty,
-                Cases = await _db.Cases.Where(c => c.LawyerId == lawyerId).ToListAsync()
-            };
-
-            return View(caseListViewModel);
+            return View(await _caseService.GetCaseListAsync(lawyerId));
         }
 
         public IActionResult CreateCase(string lawyerId)
@@ -44,79 +28,62 @@ namespace CourtDiary.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCase(Case caseModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(caseModel);
+
+            var success = await _caseService.CreateCaseAsync(caseModel);
+            if (success)
             {
-                var userEmail = User.FindFirstValue(ClaimTypes.Email);
-                var user = await _userManager.FindByEmailAsync(userEmail!);
-
-                if (user == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-
-                //caseModel.LawyerId = user.Id;
-                _db.Cases.Add(caseModel);
-                await _db.SaveChangesAsync();
+                TempData["success"] = "Case created successfully.";
                 return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
             }
+            else
+                TempData["error"] = "Failed to create case. Please try again.";
+
             return View(caseModel);
         }
 
         public async Task<IActionResult> EditCase(int caseId)
         {
-            var caseFromDb = await _db.Cases.FindAsync(caseId);
-            if (caseFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(caseFromDb);
+            var caseFromDb = await _caseService.GetCaseAsync(caseId);
+            return caseFromDb != null ? View(caseFromDb) : NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> EditCase(Case caseModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(caseModel);
+
+            var success = await _caseService.UpdateCaseAsync(caseModel);
+            if (success)
             {
-                _db.Cases.Update(caseModel);
-                await _db.SaveChangesAsync();
+                TempData["success"] = "Case updated successfully.";
                 return RedirectToAction("CaseList", new { lawyerId = caseModel.LawyerId });
             }
+            else
+                TempData["error"] = "Failed to update case. Please try again.";
+
             return View(caseModel);
         }
 
-
-        //[Authorize(Roles = $"{StaticDetails.RoleSuperAdmin},{StaticDetails.RoleOrganizationAdmin}")]
         public async Task<IActionResult> DeleteCase(int caseId)
         {
-            var caseFromDb = await _db.Cases.AsNoTracking().SingleOrDefaultAsync(c => c.Id == caseId);
+            var lawyerId = await _caseService.DeleteCaseAsync(caseId);
 
-            if(caseFromDb is not null)
+            if(!lawyerId.IsNullOrEmpty())
             {
-                _db.Cases.Remove(caseFromDb);
-                await _db.SaveChangesAsync();               
-                
+                TempData["success"] = "Case deleted successfully.";
+                return RedirectToAction("CaseList", new { lawyerId });
             }
+            else
+                TempData["error"] = "Failed to delete case. Please try again.";
 
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(userEmail!);
-
-            return RedirectToAction("Cases", new { lawyerId = user!.Id });
+            return NotFound();
         }
-
+        
         public async Task<IActionResult> CaseDetails(int caseId)
         {
-            var caseFromDb = await _db.Cases.SingleOrDefaultAsync(c => c.Id == caseId);
-
-            if (caseFromDb == null)
-            {
-                return NotFound();
-            }
-            var caseDetailsViewModel = new CaseDetailsViewModel
-            {
-                Case = caseFromDb,
-                HearingList = await _db.Hearings.Where(h => h.CaseId == caseId).ToListAsync()
-            };
-            return View(caseDetailsViewModel);
+            var caseDetailsViewModel = await _caseService.GetCaseDetailsAsync(caseId);
+            return caseDetailsViewModel != null ? View(caseDetailsViewModel) : NotFound();
         }
     }
 }

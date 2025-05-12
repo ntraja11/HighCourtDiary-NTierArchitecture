@@ -1,6 +1,6 @@
 ﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using CourtDiary.Data.Utility;
+using CourtDiary.Domain.Models;
+using CourtDiary.Shared.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +24,7 @@ namespace CourtDiary.Data.Initialize
             {
                 if (_db.Database.GetPendingMigrations().Any())
                 {
-                    _db.Database.Migrate();                    
+                    _db.Database.Migrate();
                 }
 
                 if (!await _roleManager.RoleExistsAsync(StaticDetails.RoleSuperAdmin))

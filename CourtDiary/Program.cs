@@ -1,6 +1,10 @@
 using CourtDiary.Data.Context;
 using CourtDiary.Data.Initialize;
-using CourtDiary.Data.Models;
+using CourtDiary.Data.Repositories;
+using CourtDiary.Data.Repositories.Interfaces;
+using CourtDiary.Data.Services;
+using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Domain.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +25,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.S
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<ICaseService, CaseService>();
+builder.Services.AddScoped<IHearingService, HearingService>();
+builder.Services.AddScoped<ILawyerService, LawyerService>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
         //options.AccessDeniedPath = "/Account/AccessDenied";
     });
 

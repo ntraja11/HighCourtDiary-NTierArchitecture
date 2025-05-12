@@ -1,151 +1,62 @@
-﻿using CourtDiary.Data.Context;
-using CourtDiary.Data.Models;
-using CourtDiary.Data.Utility;
-using CourtDiary.ViewModels;
-using Microsoft.AspNetCore.Identity;
+﻿using CourtDiary.Data.Services.Interfaces;
+using CourtDiary.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace CourtDiary.Controllers
 {
     public class OrganizationController : Controller
     {
-        private readonly CourtDiaryDbContext _db;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        public OrganizationController(CourtDiaryDbContext db,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+        private readonly IUserService _userService;
+        private readonly IOrganizationService _organizationService;
+
+        public OrganizationController(IUserService userService, IOrganizationService organizationService)
         {
-            _db = db;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _userService = userService;
+            _organizationService = organizationService;
         }
 
         public async Task<IActionResult> Index()
         {
-            if(!User.Identity!.IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+            var user = await _userService.GetAuthenticatedUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");            
 
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(userEmail!);
-
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var isSuperAdmin = await _userManager.IsInRoleAsync(user, StaticDetails.RoleSuperAdmin);
-            var isOrganizationAdmin = await _userManager.IsInRoleAsync(user, StaticDetails.RoleOrganizationAdmin);
-            var isLawyer = (await _userManager.IsInRoleAsync(user, StaticDetails.RoleLawyer)) || user.IsLawyer ;
-            var isJunior = await _userManager.IsInRoleAsync(user, StaticDetails.RoleJunior);
-
-            if (isSuperAdmin)
-            {
-                var organizations = await _db.Organizations.Where(o => o.CreatedBy != user!.Email).ToListAsync();
-
-
-                var approvedOrganizations = organizations.Where(o => o.IsActive).ToList();
-                var pendingOrganizations = organizations.Where(o => !o.IsActive).ToList();
-
-                var superAdminViewModel = new SuperAdminViewModel
-                {
-                    ApprovedOrganizations = approvedOrganizations,
-                    PendingOrganizations = pendingOrganizations
-                };
-
-                return View("SuperAdminView", superAdminViewModel);
-            }
-            else if(isOrganizationAdmin && !user.IsLawyer)
-            {
-                return await ShowOrganizationAdminView(user);
-            }
-            else if (isLawyer || isJunior)
-            {
+            if (!await _userService.IsOrganizationAdminAsync(user) && (await _userService.IsLawyerAsync(user) || await _userService.IsJuniorAsync(user)))
                 return RedirectToAction("CaseList", "Case", new { lawyerId = user.Id });
-            }
+                       
+            return RedirectToAction("OrganizationDashboard", "Organization");
+        }
 
+        public async Task<IActionResult> OrganizationDashboard()
+        {
+            var user = await _userService.GetAuthenticatedUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            if (await _userService.IsSuperAdminAsync(user))
+                return View("SuperAdmin", await _organizationService.GetSuperAdminDashboardAsync(user));
+
+            if (await _userService.IsOrganizationAdminAsync(user))
+                return View(await _organizationService.GetOrganizationAdminDashboardAsync(user));
+
+            //Implement Access deinied view
             return RedirectToAction("Index", "Home");
-            
-        }       
-
+        }
 
         [HttpPost]
         public async Task<IActionResult> ApproveOrganization(int organizationId)
         {
-            var organization = await _db.Organizations.FindAsync(organizationId);
-            if (organization != null)
-            {
-                organization.IsActive = true;
+            if (await _organizationService.ApproveOrganizationAsync(organizationId))
+                return RedirectToAction("Index");
 
-                organization.ActivatedDate = DateOnly.FromDateTime(DateTime.Now);
-                await _db.SaveChangesAsync();
-            }
-
-            var orgAdmin = await _userManager.FindByEmailAsync(organization!.CreatedBy!);
-            if(orgAdmin is not null)
-            {
-                orgAdmin.EmailConfirmed = true;
-                await _userManager.UpdateAsync(orgAdmin);
-            }
-            return RedirectToAction("Index");
+            return BadRequest("Approval failed.");
         }
 
         [HttpPost]
         public async Task<IActionResult> AssignAdminAsLawyer(string orgAdminId)
         {
-            var orgAdmin = await _userManager.FindByIdAsync(orgAdminId);
+            if (await _organizationService.AssignAdminAsLawyerAsync(orgAdminId))
+                return RedirectToAction("Index");
 
-            if(orgAdmin is not null)
-            {
-                orgAdmin.IsLawyer = true;
-                await _userManager.UpdateAsync(orgAdmin);
-            }
-
-            return RedirectToAction("Index");
-        }
-                
-        private async Task<IActionResult> ShowOrganizationAdminView(ApplicationUser user)
-        {
-            OrganizationAdminViewModel organizationAdminViewModel = await GetOrganizationAdminViewModel(user);
-
-            return View("OrganizationAdminView", organizationAdminViewModel);
-        }
-
-        private async Task<OrganizationAdminViewModel> GetOrganizationAdminViewModel(ApplicationUser user)
-        {
-            var lawyers = await _userManager.GetUsersInRoleAsync(StaticDetails.RoleLawyer);
-            var organizationLawyers = lawyers.Where(l => l.OrganizationId == user.OrganizationId).ToList();
-
-            var juniors = await _userManager.GetUsersInRoleAsync(StaticDetails.RoleJunior);
-            organizationLawyers.AddRange(juniors);
-
-            if (user.IsLawyer)
-                organizationLawyers.Add(user);
-
-
-            var cases = new List<Case>();
-
-            foreach(var lawyer in organizationLawyers)
-            {
-                var caseList = await _db.Cases.Where(c => c.LawyerId == lawyer.Id).ToListAsync();
-                cases.AddRange(caseList);
-            }
-
-            
-
-            return new OrganizationAdminViewModel
-            {
-                Organization = await _db.Organizations
-                                    .FirstOrDefaultAsync(o => o.CreatedBy == user!.Email),
-                OrganizationAdmin = user,
-                Lawyers = organizationLawyers,
-                Cases = cases
-            };
+            return BadRequest("Failed to update role.");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CourtDiary.Data.Models
+namespace CourtDiary.Domain.Models
 {
     public class ApplicationUser : IdentityUser
     {
